@@ -9,6 +9,8 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from os.path import exists
 import csv
+import os
+import subprocess
 
 # Plot treatment pressure, slurry rate, open well head pressure, and initial and final isip for one stage
 def full_frac_plot(i,owp,initial_isip,final_isip,root):
@@ -23,8 +25,8 @@ def full_frac_plot(i,owp,initial_isip,final_isip,root):
     ax1.tick_params(axis='x', labelrotation = 45)
     
     ax1.axhline(owp,linestyle='dashed',label='Open well Head Pressure',color='green')
-    ax1.axhline(initial_isip,linestyle='dashed',label='Open well Head Pressure',color='purple')
-    ax1.axhline(final_isip,linestyle='dashed',label='Open well Head Pressure',color='cyan')
+    ax1.axhline(initial_isip,linestyle='dashed',label='Initial ISIP',color='purple')
+    ax1.axhline(final_isip,linestyle='dashed',label='Final ISIP',color='cyan')
 
     ax2 = ax1.twinx()
     ax2.plot(stage_data[i].index,stage_data[i]['Blender_Slurry_Rate'],color='red',label='Slurry Rate')
@@ -205,8 +207,13 @@ def add_bad_stage(well,stage,bad_stages):
         
     return bad_stages
 
+#__________________________________________________________________________
+#Start main script
+root = tk.Tk()
+root.withdraw()
 file_s = fd.askopenfilenames(title='Select frac data file(s) to analyze',
                           filetypes = [('csv', '*.csv')]  )
+root.destroy()
 skip = 0
 j = 0
 
@@ -304,10 +311,10 @@ for f in file_s:
         t_text = ''
         for element in bad_stages[well]:
             if t_text:
-                t_text = t_text + ',\nStage ' + str(element)
+                t_text = t_text + ',\n' + str(element)
             else:
                 t_text = 'The following stages could not be automatically calculated for well '\
-                + str(well) + ' ' + str(api) + ':\nStage ' + str(element)
+                + str(well) + ' ' + str(api) + ':\n' + str(element)
         
         # Create a label widget for custom text
         text_label = tk.Label(root, text=t_text, anchor='w')
@@ -343,4 +350,10 @@ for f in file_s:
                 else:
                     writer.writerow({'Well':well,'API':api,'Stage':s,'OWP':round(owp[s]),'Initial ISIP':round(i_isip[s]),'Final ISIP':round(f_isip[s])})
         j = 1
+
+if os.name == 'nt':
+    os.startfile('frac_calcs.csv')
+else:
+    subprocess.call(('open','frac_calcs.csv'))
+
 exit()
