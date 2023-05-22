@@ -62,6 +62,9 @@ def full_frac_plot(i,owp,initial_isip,final_isip,root):
     skip_all_button = tk.Button(root, text="Skip All", command=skip_all)
     skip_all_button.pack()
 
+    x = 100
+    y = 100
+    root.geometry('+%d+%d'%(x,y))  
     root.mainloop()
 
 def next_stage():
@@ -215,6 +218,7 @@ file_s = fd.askopenfilenames(title='Select frac data file(s) to analyze',
                           filetypes = [('csv', '*.csv')]  )
 root.destroy()
 skip = 0
+first = 0
 j = 0
 
 for f in file_s:
@@ -324,6 +328,9 @@ for f in file_s:
         next_button = tk.Button(root, text="Next", command=next_stage)
         next_button.pack()
         
+        x = 500
+        y = 150
+        root.geometry('+%d+%d'%(x,y))
         root.mainloop()
     
     #Write frac calcs to csv
